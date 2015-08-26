@@ -1,0 +1,39 @@
+Dies die Hilfe zu abas2SFTP
+
+Version 0.1
+
+Aufruf mit benutzerdefinierten Variablen 
+
+xjthost 	 	: server-ip Adresse 
+xjtport 	 	: port
+xjtuser 	 	: Benutzername
+xjtpassword  	: Passwort
+xjtlocalfile 	: lokales File mit Pfad
+xjtremotefile	: remote File mit Pfad 
+xjterrormessage : Fehlermeldung
+xjtmessage		: Ausgabe 
+xjtcommand      : Kommando s.u.
+xjthelp			: zur Ausgabe der Hilfe
+
+
+Aufruf mit Parametern 
+
+.input de.abasgmbh.utils.sftp.abas2SFTP.java Kommando Server Port Username Passwort RemoteFile LokalFile 
+
+
+
+Folgende Funktionen sind sind vorgesehen :
+
+putDir  - Alle Dateien eines Verzeichnisses auf den Server kopieren
+putFile - Eine Datei auf den Server kopieren
+mv2remDir   - Alle Dateien eines Verzeichnisses auf den Server kopieren und anschließend lokal löschen
+mv2remFile  - Eine Datei auf den Server kopieren und anschließend lokal löschen
+
+getDir  - Alle Dateien eines Verzeichnisses von einem Server in ein lokales Verzeichnis kopieren
+getFile - Eine Datei  von einem Server in ein lokales Verzeichnis kopieren
+mv2locDir - Alle Dateien eines Verzeichnisses von einem Server in eine lokales Verzeichnis kopieren und anschließend auf dem Server löschen
+mv2locFile - Eine Dateie von einem Server in eine lokales Verzeichnis kopieren und anschließend auf dem Server löschen
+
+listRemFiles - Gibt alle Dateien in einem auf dem entfernten Servern aus 
+
+
