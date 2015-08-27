@@ -393,8 +393,8 @@ public class SFtpWrapper implements AutoCloseable
 		for (File file : listFiles) {
 			if (file.isFile()) {
 				
-				localSrcFilePath = file.getAbsolutePath() + "\\" + file.getName();
-				remoteDestfile = remoteDestDirectory + "\\" + file.getName();
+				localSrcFilePath = file.getAbsolutePath() ;
+				remoteDestfile = remoteDestDirectory +  file.getName();
 				sftpWrapper.uploadFile(localSrcFilePath, remoteDestDirectory);
 				FileData fileData = sftpWrapper.getFileData(remoteDestfile);
 				

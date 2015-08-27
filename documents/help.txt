@@ -4,17 +4,17 @@ Version 0.1
 
 Aufruf mit benutzerdefinierten Variablen 
 
-xjthost 	 	: server-ip Adresse 
-xjtport 	 	: port
-xjtuser 	 	: Benutzername
-xjtpassword  	: Passwort
-xjtlocalfile 	: lokales File mit Pfad
-xjtremotefile	: remote File mit Pfad 
+xjthost         : server-ip Adresse 
+xjtport         : port
+xjtuser         : Benutzername
+xjtpassword     : Passwort
+xjtlocalfile    : lokales File mit Pfad
+xjtremotefile   : remote File mit Pfad 
 xjterrormessage : Fehlermeldung
-xjtmessage		: Ausgabe 
+xjtmessage      : Ausgabe 
 xjtcommand      : Kommando s.u.
-xjthelp			: zur Ausgabe der Hilfe
-
+xjthelp         : zur Ausgabe der Hilfe
+1234567812345678123456781234567812345678123456781234567812345678123456781234567812345678123456781234567812345678
 
 Aufruf mit Parametern 
 

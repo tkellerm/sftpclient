@@ -1,6 +1,8 @@
 package de.abasgmbh.utils.sftp;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
@@ -21,6 +23,7 @@ import com.jcraft.jsch.Buffer;
 
 import de.abas.eks.jfop.FOPException;
 import de.abas.eks.jfop.remote.ContextRunnable;
+import de.abas.eks.jfop.remote.FO;
 import de.abas.eks.jfop.remote.FOPSessionContext;
 import de.abas.erp.api.gui.TextBox;
 import de.abas.erp.common.AbasException;
@@ -44,7 +47,7 @@ public class abas2SFTP implements ContextRunnable {
 	private static String varnameErrorMessage = "xjterrormessage";
 	private static String varnameMessage = "xjtmessage";
 	private static String varnameCommand = "xjtcommand";
-	private static String varnamehelp = "xjthelp";
+	private static String varnameHelp = "xjthelp";
 	
 	private String host;
 	private String port;
@@ -83,7 +86,9 @@ public class abas2SFTP implements ContextRunnable {
 			
 //			Indikator, ob über die Argumente oder die Variablen verfahren wird ist die Variable hosts
 			
-			if (userTextBuffer.isVarDefined(varnameHost)) {
+			definedUsertextvars(userTextBuffer);
+			
+			if (!userTextBuffer.isEmpty(varnameHost)) {
 				host = userTextBuffer.getStringValue(varnameHost);
 				port = userTextBuffer.getStringValue(varnamePort);
 				username = userTextBuffer.getStringValue(varnameUser);
@@ -94,7 +99,14 @@ public class abas2SFTP implements ContextRunnable {
 				
 				try {
 					sftpKommandos(host , port , username , password , localeFileName , remoteFileName , command);
+					variable2textbuffer(this.message , varnameMessage, userTextBuffer);
 				} catch (AbasException e) {
+					exeptionToErrorMessage(e, userTextBuffer);
+					return 1;
+				} catch (NumberFormatException e) {
+					exeptionToErrorMessage(e, userTextBuffer);
+					return 1;
+				} catch (IOException e) {
 					exeptionToErrorMessage(e, userTextBuffer);
 					return 1;
 				} 
@@ -114,10 +126,16 @@ public class abas2SFTP implements ContextRunnable {
 					localeFileName = args[7];
 					try {
 						sftpKommandos(host , port , username , password , localeFileName , remoteFileName , command);
+						variable2textbuffer(this.message , varnameMessage, userTextBuffer);
 					} catch (AbasException e) {
 						
 						exeptionToErrorMessage(e, userTextBuffer);
-						
+						return 1;
+					} catch (NumberFormatException e) {
+						exeptionToErrorMessage(e, userTextBuffer);
+						return 1;
+					} catch (IOException e) {
+						exeptionToErrorMessage(e, userTextBuffer);
 						return 1;
 					}	
 					
@@ -131,9 +149,14 @@ public class abas2SFTP implements ContextRunnable {
 					try {
 						sftpKommandos(host , port , username , password , localeFileName , remoteFileName , command);
 						variable2textbuffer(this.message , varnameMessage, userTextBuffer);
-						userTextBuffer.assign(varnameMessage, this.message);
 						return 0;
 					} catch (AbasException e) {
+						exeptionToErrorMessage(e, userTextBuffer);
+						return 1;
+					} catch (NumberFormatException e) {
+						exeptionToErrorMessage(e, userTextBuffer);
+						return 1;
+					} catch (IOException e) {
 						exeptionToErrorMessage(e, userTextBuffer);
 						return 1;
 					}
@@ -201,88 +224,108 @@ public class abas2SFTP implements ContextRunnable {
       *
       * listRemFiles
 	 * @throws AbasException 
+	 * @throws IOException 
+	 * @throws NumberFormatException 
 	  */
 	 
 	private void sftpKommandos(String host, String port, String username,
 			String password, String localeFileName, String remoteFileName,
-			String command) throws AbasException {
+			String command) throws AbasException, NumberFormatException, IOException {
 		
 		switch (command) {
 		case "putDir":
-			   try {
-				SFtpWrapper.uploadDirectory(remoteFileName, localeFileName, username, password, host, port);
-			} catch (NumberFormatException e) {
-			
-				throw new AbasException(e.getMessage().toString());
-			} catch (IOException e) {
-				throw new AbasException(e.getMessage().toString());
-			}
+
+				SFtpWrapper.uploadDirectory(remoteFileName, localeFileName, username, password, host, port);			
 			break;
 		case "putFile" :
-			try {
+			
 				SFtpWrapper.uploadFile(remoteFileName, localeFileName, username, password, host, port);
-			} catch (IOException e) {
-				throw new AbasException(e.getMessage().toString());
-			}
+			
 			break;
 		case "mv2remDir" :
-			try {
+			
 				SFtpWrapper.uploadDirectoryAndRemoveFiles(remoteFileName, localeFileName, username, password, host, port);
-			} catch (NumberFormatException e) {
-				throw new AbasException(e.getMessage().toString());
-			} catch (IOException e) {
-				throw new AbasException(e.getMessage().toString());
-			}
+			
 			break;
 		case "mv2remFile" :
-			try {
+			
 				SFtpWrapper.uploadFileAndRemove(remoteFileName, localeFileName, username, password, host, port);
-			} catch (IOException e) {
-				
-				throw new AbasException(e.getMessage().toString());
-			}
+			
 			break;
 		case "getDir" :
-			try {
+			
 				SFtpWrapper.downloadFilesInDirectory(remoteFileName, localeFileName, username, password, host, port);
-			} catch (IOException e) {
-				throw new AbasException(e.getMessage().toString());
-			}
+			
 			break;
 		case "getFile" :
-			try {
+			
 				SFtpWrapper.downloadFile(remoteFileName, localeFileName, username, password, host, port);
-			} catch (IOException e) {
-				throw new AbasException(e.getMessage().toString());
-			}
+			
 			break;
 		case "mv2locDir" :
-			try {
+			
 				SFtpWrapper.downloadAndRemoveFilesInDirectory(remoteFileName, localeFileName, username, password, host, port);
-			} catch (IOException e) {
-				throw new AbasException(e.getMessage().toString());
-			}
+						
 			break;
 		case "mv2locFile" :
-			try {
+			
 				SFtpWrapper.downloadFileAndRemove(remoteFileName, localeFileName, username, password, host, port);
-			} catch (IOException e) {
-				throw new AbasException(e.getMessage().toString());
-			}
+			
 			break;
 		case "listRemFiles" :
-			try {
+			
 				this.message = SFtpWrapper.getFileDataListOnlyFilename(remoteFileName, username, password, host, port);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				throw new AbasException(e.getMessage().toString());
-			}
+			
 			break;
 			
 		default:
 			break;
 		}
 
+		
+	}
+	
+	private void definedUsertextvars(UserTextBuffer userTextBuffer){
+		
+		if (!userTextBuffer.isVarDefined(varnameHost)) {
+			userTextBuffer.defineVar("TEXT", varnameHost);
+		}
+		
+		if (!userTextBuffer.isVarDefined(varnamePort)) {
+			userTextBuffer.defineVar("TEXT", varnamePort);
+		}
+		
+		if (!userTextBuffer.isVarDefined(varnameHost)) {
+			userTextBuffer.defineVar("TEXT", varnameHost);
+		}
+		
+		if (!userTextBuffer.isVarDefined(varnameUser)) {
+			userTextBuffer.defineVar("TEXT", varnameUser);
+		}
+		
+		if (!userTextBuffer.isVarDefined(varnamePassword)) {
+			userTextBuffer.defineVar("TEXT", varnamePassword);
+		}
+		
+		if (!userTextBuffer.isVarDefined(varnameLocalFile)) {
+			userTextBuffer.defineVar("TEXT", varnameLocalFile);
+		}
+		
+		if (!userTextBuffer.isVarDefined(varnameRemoteFile)) {
+			userTextBuffer.defineVar("TEXT", varnameRemoteFile);
+		}
+		
+		if (!userTextBuffer.isVarDefined(varnameErrorMessage)) {
+			userTextBuffer.defineVar("TEXT", varnameErrorMessage);
+		}
+		
+		if (!userTextBuffer.isVarDefined(varnameCommand)) {
+			userTextBuffer.defineVar("TEXT", varnameCommand);
+		}
+		
+		if (!userTextBuffer.isVarDefined(varnameHelp)) {
+			userTextBuffer.defineVar("TEXT", varnameHelp);
+		}
 		
 	}
 
@@ -294,28 +337,25 @@ public class abas2SFTP implements ContextRunnable {
 
 		String helpmessage = "";
 		
-		List<String> listOfString = null;
 		try {
-			
-			Scanner scanner = new Scanner(new File(helpFile));
-			while (scanner.hasNext()) {
-				helpmessage = helpmessage + scanner.useDelimiter("\\Z").next() + "\n"; 	
-				
-			}
-			
+					
+			FileReader fr = new FileReader(helpFile);
+		     BufferedReader br = new BufferedReader(fr);
+
+		     String zeile = "";
+
+		     while( (zeile = br.readLine()) != null )
+		     {
+					dbwriter.println(zeile);
+		     }
+
+		     br.close();
+
 		} catch (IOException e) {
 			TextBox textbox = new TextBox(dbContext, "Fehler" , "Fehler beim Lesen der Hilfe-Datei" + e.toString());
 			textbox.show();
 		}
-		if (listOfString != null) {
-			helpmessage = listOfString.toString();
-		}
-		
-//		dbwriter.print(helpmessage);
-		dbwriter.println(helpmessage);
-		
-//		dbwriter.write(helpmessage);
-		
+
 	}
 	
 	
