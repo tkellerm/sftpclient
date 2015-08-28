@@ -19,6 +19,10 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
+
 import com.jcraft.jsch.Buffer;
 
 import de.abas.eks.jfop.FOPException;
@@ -36,7 +40,8 @@ public class abas2SFTP implements ContextRunnable {
 	
 //	private static Path helpFile = new P"documents/help.txt"; 
 			
-
+	private Logger logger = Logger.getLogger(abas2SFTP.class);
+	
 	private static final String helpFile = "java/projects/sftpclient/documents/help.txt";
 	private static String varnameHost = "xjthost";
 	private static String varnamePort = "xjtport";
@@ -66,6 +71,7 @@ public class abas2SFTP implements ContextRunnable {
 		
 		DbContext dbContext = ctx.getDbContext();
 		
+//		BasicConfigurator.configure();
 		
 	    return run(dbContext, args);	    
 	}
@@ -99,17 +105,22 @@ public class abas2SFTP implements ContextRunnable {
 				
 				try {
 					sftpKommandos(host , port , username , password , localeFileName , remoteFileName , command);
+					logger.info("var Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command );
 					variable2textbuffer(this.message , varnameMessage, userTextBuffer);
-				} catch (AbasException e) {
-					exeptionToErrorMessage(e, userTextBuffer);
-					return 1;
-				} catch (NumberFormatException e) {
+				}  catch (NumberFormatException e) {
+					
+					logger.error("var Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command , e);
 					exeptionToErrorMessage(e, userTextBuffer);
 					return 1;
 				} catch (IOException e) {
+					logger.error("var Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command , e);
 					exeptionToErrorMessage(e, userTextBuffer);
 					return 1;
-				} 
+				}  catch (AbasException e) {
+					logger.error("args7 Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command , e);
+					exeptionToErrorMessage(e, userTextBuffer);
+					return 1;
+				}
 				
 				
 			}else if (anzahlargs > 1) {
@@ -126,15 +137,18 @@ public class abas2SFTP implements ContextRunnable {
 					localeFileName = args[7];
 					try {
 						sftpKommandos(host , port , username , password , localeFileName , remoteFileName , command);
+						logger.info("args8 Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command );
 						variable2textbuffer(this.message , varnameMessage, userTextBuffer);
-					} catch (AbasException e) {
-						
-						exeptionToErrorMessage(e, userTextBuffer);
-						return 1;
-					} catch (NumberFormatException e) {
+					}  catch (NumberFormatException e) {
+						logger.error("args8 Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command , e);
 						exeptionToErrorMessage(e, userTextBuffer);
 						return 1;
 					} catch (IOException e) {
+						logger.error("args8 Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command , e);
+						exeptionToErrorMessage(e, userTextBuffer);
+						return 1;
+					} catch (AbasException e) {
+						logger.error("args7 Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command , e);
 						exeptionToErrorMessage(e, userTextBuffer);
 						return 1;
 					}	
@@ -148,15 +162,19 @@ public class abas2SFTP implements ContextRunnable {
 					localeFileName = "";
 					try {
 						sftpKommandos(host , port , username , password , localeFileName , remoteFileName , command);
+						logger.info("args7 Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command );
 						variable2textbuffer(this.message , varnameMessage, userTextBuffer);
 						return 0;
-					} catch (AbasException e) {
-						exeptionToErrorMessage(e, userTextBuffer);
-						return 1;
-					} catch (NumberFormatException e) {
+					}  catch (NumberFormatException e) {
+						logger.error("args7 Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command , e);
 						exeptionToErrorMessage(e, userTextBuffer);
 						return 1;
 					} catch (IOException e) {
+						logger.error("args7 Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command , e);
+						exeptionToErrorMessage(e, userTextBuffer);
+						return 1;
+					} catch (AbasException e) {
+						logger.error("args7 Host:" + host + " Port:" + port + " User:" + username + " LocalFile:" + localeFileName + " Remote:" + remoteFileName + " Command" + command , e);
 						exeptionToErrorMessage(e, userTextBuffer);
 						return 1;
 					}
@@ -186,7 +204,7 @@ public class abas2SFTP implements ContextRunnable {
 				userTextBuffer.defineVar("TEXT", varnameErrorMessage);
 			}
 		 
-			userTextBuffer.assign(varnameErrorMessage, e.getMessage() + "\n" + e.getStackTrace().toString()+ "\n");
+			userTextBuffer.assign(varnameErrorMessage, e.getMessage() + "\n" + ExceptionUtils.getStackTrace(e) + "\n");
 		
 	}
 
@@ -230,7 +248,7 @@ public class abas2SFTP implements ContextRunnable {
 	 
 	private void sftpKommandos(String host, String port, String username,
 			String password, String localeFileName, String remoteFileName,
-			String command) throws AbasException, NumberFormatException, IOException {
+			String command) throws  NumberFormatException, IOException, AbasException {
 		
 		switch (command) {
 		case "putDir":
@@ -279,7 +297,9 @@ public class abas2SFTP implements ContextRunnable {
 			break;
 			
 		default:
-			break;
+//			Bei falschem Commando wird eine Exeption geworfen
+			throw new AbasException("Das Kommando " + command + " ist unbekannt!");
+			
 		}
 
 		
@@ -329,6 +349,7 @@ public class abas2SFTP implements ContextRunnable {
 		
 	}
 
+	
 	private void helpToScreen(DbContext dbContext) {
 		
 		dbContext.getSettings().setDisplayMode(DisplayMode.DISPLAY);

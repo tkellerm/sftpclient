@@ -29,5 +29,7 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/S3Java/abas-jfopapi-doc.zip!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/S3Java/lib/log4j.jar"/>
+	<classpathentry kind="lib" path="includejar/commons-lang3-3.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

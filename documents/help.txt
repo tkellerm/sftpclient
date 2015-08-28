@@ -14,7 +14,7 @@ xjterrormessage : Fehlermeldung
 xjtmessage      : Ausgabe 
 xjtcommand      : Kommando s.u.
 xjthelp         : zur Ausgabe der Hilfe
-1234567812345678123456781234567812345678123456781234567812345678123456781234567812345678123456781234567812345678
+
 
 Aufruf mit Parametern 
 
