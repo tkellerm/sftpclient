@@ -35,7 +35,8 @@ public class SFtpWrapperTest
       sftpServer.stop();
    }
 
-   @Test
+   @SuppressWarnings("unused")
+@Test
    public void testSFtpWrapper() throws IOException
    {
       String localSftpSubdir  = "target/sftp-local/";

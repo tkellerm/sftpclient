@@ -1,33 +1,15 @@
 package de.abasgmbh.utils.sftp;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringReader;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-
-
-
-import java.util.List;
-import java.util.Scanner;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
-
-import com.jcraft.jsch.Buffer;
 
 import de.abas.eks.jfop.FOPException;
 import de.abas.eks.jfop.remote.ContextRunnable;
-import de.abas.eks.jfop.remote.FO;
 import de.abas.eks.jfop.remote.FOPSessionContext;
 import de.abas.erp.api.gui.TextBox;
 import de.abas.erp.common.AbasException;
@@ -62,7 +44,7 @@ public class abas2SFTP implements ContextRunnable {
 	private String remoteFileName;
 	private String command;
 	private String message;
-	private String errormessage;
+//	private String errormessage;
 
 	
 	
@@ -356,7 +338,7 @@ public class abas2SFTP implements ContextRunnable {
 		
 		PrintWriter dbwriter = dbContext.out();
 
-		String helpmessage = "";
+
 		
 		try {
 					

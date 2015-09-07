@@ -1,13 +1,27 @@
 package de.abasgmbh.utils.sftp;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.zip.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import com.jcraft.jsch.*;
+import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
-import com.sun.org.apache.xpath.internal.axes.LocPathIterator;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 
 /** Wrapper-Klasse zur Dateiuebertragung von und zu einem SFTP-Server sowie zum Entpacken von .zip und .gz.
     Die Wrapper-Klasse dient zur Entkopplung von der SFTP-Implementierung. */
@@ -297,6 +311,7 @@ public class SFtpWrapper implements AutoCloseable
 	public static void downloadAndRemoveFilesInDirectory(String remoteSrcDir, String localDstDir, String benutzername, String passwort,	String host, String port) throws IOException
 	
 	{
+		@SuppressWarnings("resource")
 		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
 			
 		sftpWrapper.downloadAndRemoveFilesInDirectory(remoteSrcDir, localDstDir);
@@ -324,9 +339,11 @@ public class SFtpWrapper implements AutoCloseable
    }
    
    
-   public static void downloadFilesInDirectory(String remoteSrcDir, String localDstDir, String benutzername, String passwort,	String host, String port) throws IOException
+   
+public static void downloadFilesInDirectory(String remoteSrcDir, String localDstDir, String benutzername, String passwort,	String host, String port) throws IOException
 	
 	{
+		@SuppressWarnings("resource")
 		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
 			
 		sftpWrapper.downloadAndRemoveFilesInDirectory(remoteSrcDir, localDstDir);
@@ -353,7 +370,8 @@ public class SFtpWrapper implements AutoCloseable
    public static void downloadFile(String remoteSrcFile, String localDstDir, String benutzername, String passwort,	String host, String port) throws IOException
 	
 	{
-		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
+	   @SuppressWarnings("resource")
+	   SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
 			
 		sftpWrapper.downloadFile(remoteSrcFile, localDstDir);
 		
@@ -362,7 +380,8 @@ public class SFtpWrapper implements AutoCloseable
    public static void downloadFileAndRemove(String remoteSrcFile, String localDstDir, String benutzername, String passwort,	String host, String port) throws IOException
 	
 	{
-		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
+	   @SuppressWarnings("resource")
+	   SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
 			
 		sftpWrapper.downloadFile(remoteSrcFile, localDstDir);
 		
@@ -376,16 +395,19 @@ public class SFtpWrapper implements AutoCloseable
    public static void uploadFile(String remoteDestFile, String localFile, String benutzername, String passwort, String host, String port) throws IOException
 	
   	{
-  		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
+	   @SuppressWarnings("resource")
+	   SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
   		sftpWrapper.uploadFile(localFile, remoteDestFile);
   		  		
   	}
    
    public static void uploadDirectory(String remoteDestDirectory, String localDirectory, String benutzername, String passwort, String host, String port) throws NumberFormatException, IOException 
    {
+	   @SuppressWarnings("resource")
 	   SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port));
 	   File localDir = new File(localDirectory);
 	   String localSrcFilePath = "";
+	   @SuppressWarnings("unused")
 	   String remoteDestfile = "";
 	   if (localDir.isDirectory()) {
 		
@@ -396,7 +418,7 @@ public class SFtpWrapper implements AutoCloseable
 				localSrcFilePath = file.getAbsolutePath() ;
 				remoteDestfile = remoteDestDirectory +  file.getName();
 				sftpWrapper.uploadFile(localSrcFilePath, remoteDestDirectory);
-				FileData fileData = sftpWrapper.getFileData(remoteDestfile);
+//				FileData fileData = sftpWrapper.getFileData(remoteDestfile);
 				
 			}
 			
@@ -410,6 +432,7 @@ public class SFtpWrapper implements AutoCloseable
    
    public static void uploadDirectoryAndRemoveFiles(String remoteDestDirectory, String localDirectory, String benutzername, String passwort, String host, String port) throws NumberFormatException, IOException 
    {
+	   @SuppressWarnings("resource")
 	   SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port));
 	   File localDir = new File(localDirectory);
 	   String localSrcFilePath = "";
@@ -442,7 +465,8 @@ public class SFtpWrapper implements AutoCloseable
    public static void uploadFileAndRemove(String remoteDestFile, String localFile, String benutzername, String passwort, String host, String port) throws IOException
 	
  	{
- 		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
+ 		@SuppressWarnings("resource")
+		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
  		sftpWrapper.uploadFile(localFile, remoteDestFile);
  		FileData fileData = sftpWrapper.getFileData(remoteDestFile);
  		if (fileData != null) {
@@ -485,6 +509,7 @@ public class SFtpWrapper implements AutoCloseable
   public static String getFileDataListOnlyFilename(String remoteSrcFile, String benutzername, String passwort,	String host, String port) throws IOException
 	
 	{
+		@SuppressWarnings("resource")
 		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
 		return sftpWrapper.getFileDataListOnlyFilename(remoteSrcFile);
 		
