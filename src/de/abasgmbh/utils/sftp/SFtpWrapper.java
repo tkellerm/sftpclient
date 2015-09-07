@@ -311,10 +311,12 @@ public class SFtpWrapper implements AutoCloseable
 	public static void downloadAndRemoveFilesInDirectory(String remoteSrcDir, String localDstDir, String benutzername, String passwort,	String host, String port) throws IOException
 	
 	{
+		String remoteDir = pruefeDirName(remoteSrcDir);
+		String localDir = pruefeDirName(localDstDir);
 		@SuppressWarnings("resource")
 		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
 			
-		sftpWrapper.downloadAndRemoveFilesInDirectory(remoteSrcDir, localDstDir);
+		sftpWrapper.downloadAndRemoveFilesInDirectory(remoteDir, localDir);
 			
 		
 	}
@@ -343,15 +345,25 @@ public class SFtpWrapper implements AutoCloseable
 public static void downloadFilesInDirectory(String remoteSrcDir, String localDstDir, String benutzername, String passwort,	String host, String port) throws IOException
 	
 	{
+		
+		String remoteDir = pruefeDirName(remoteSrcDir);
+		String localDir = pruefeDirName(localDstDir);
 		@SuppressWarnings("resource")
 		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
-			
-		sftpWrapper.downloadAndRemoveFilesInDirectory(remoteSrcDir, localDstDir);
+		sftpWrapper.downloadFilesInDirectory(remoteDir, localDir);
 			
 		
 	}
    
-   public void downloadFilesInDirectory( String remoteSrcDir, String localDstDir ) throws IOException
+   private static String pruefeDirName(String directoryName) {
+//	   prüfe ob letztes Zeichen ein "/" ist, wenn nicht dann hänge an
+	   if (!directoryName.endsWith("/")) {
+		   directoryName = directoryName + "/";
+	   }
+	   return directoryName;
+}
+
+public void downloadFilesInDirectory( String remoteSrcDir, String localDstDir ) throws IOException
    {
       
       (new File( localDstDir )).mkdirs();
@@ -405,10 +417,14 @@ public static void downloadFilesInDirectory(String remoteSrcDir, String localDst
    {
 	   @SuppressWarnings("resource")
 	   SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port));
-	   File localDir = new File(localDirectory);
+	   
+	   String remoteDir = pruefeDirName(remoteDestDirectory);
+	   String localDirStr = pruefeDirName(localDirectory);
+	   
+	   
+	   File localDir = new File(localDirStr);
 	   String localSrcFilePath = "";
-	   @SuppressWarnings("unused")
-	   String remoteDestfile = "";
+	   
 	   if (localDir.isDirectory()) {
 		
 		File[] listFiles = localDir.listFiles();
@@ -416,9 +432,9 @@ public static void downloadFilesInDirectory(String remoteSrcDir, String localDst
 			if (file.isFile()) {
 				
 				localSrcFilePath = file.getAbsolutePath() ;
-				remoteDestfile = remoteDestDirectory +  file.getName();
-				sftpWrapper.uploadFile(localSrcFilePath, remoteDestDirectory);
-//				FileData fileData = sftpWrapper.getFileData(remoteDestfile);
+		
+				sftpWrapper.uploadFile(localSrcFilePath, remoteDir);
+
 				
 			}
 			
@@ -434,7 +450,11 @@ public static void downloadFilesInDirectory(String remoteSrcDir, String localDst
    {
 	   @SuppressWarnings("resource")
 	   SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port));
-	   File localDir = new File(localDirectory);
+	   
+	   String remoteDir = pruefeDirName(remoteDestDirectory);
+	   String localDirStr = pruefeDirName(localDirectory);
+	   
+	   File localDir = new File(localDirStr);
 	   String localSrcFilePath = "";
 	   String remoteDestfile = "";
 	   if (localDir.isDirectory()) {
@@ -444,8 +464,8 @@ public static void downloadFilesInDirectory(String remoteSrcDir, String localDst
 			if (file.isFile()) {
 				
 				localSrcFilePath = file.getAbsolutePath(); 
-				remoteDestfile = remoteDestDirectory  + file.getName();
-				sftpWrapper.uploadFile(localSrcFilePath, remoteDestDirectory);
+				remoteDestfile = remoteDir  + file.getName();
+				sftpWrapper.uploadFile(localSrcFilePath, remoteDir);
 				FileData fileData = sftpWrapper.getFileData(remoteDestfile);
 		 		if (fileData != null) {
 		 			if (fileData.size > 0) {
