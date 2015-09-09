@@ -466,13 +466,38 @@ public void downloadFilesInDirectory( String remoteSrcDir, String localDstDir ) 
 				localSrcFilePath = file.getAbsolutePath(); 
 				remoteDestfile = remoteDir  + file.getName();
 				sftpWrapper.uploadFile(localSrcFilePath, remoteDir);
-				FileData fileData = sftpWrapper.getFileData(remoteDestfile);
-		 		if (fileData != null) {
-		 			if (fileData.size > 0) {
-		 				sftpWrapper.deleteLocalFile(localSrcFilePath);
-					}
-					
-				}
+				sftpWrapper.deleteLocalFile(localSrcFilePath);
+				
+			}			
+		}
+	}
+   }
+   
+   public static void uploadDirectoryAndRemoveFilesWithCheck(String remoteDestDirectory, String localDirectory, String benutzername, String passwort, String host, String port) throws NumberFormatException, IOException 
+   {
+	   @SuppressWarnings("resource")
+	   SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port));
+	   
+	   String remoteDir = pruefeDirName(remoteDestDirectory);
+	   String localDirStr = pruefeDirName(localDirectory);
+	   
+	   File localDir = new File(localDirStr);
+	   String localSrcFilePath = "";
+	   String remoteDestfile = "";
+	   if (localDir.isDirectory()) {
+		
+		File[] listFiles = localDir.listFiles();
+		for (File file : listFiles) {
+			if (file.isFile()) {
+				
+				localSrcFilePath = file.getAbsolutePath(); 
+				remoteDestfile = remoteDir  + file.getName();
+				sftpWrapper.uploadFile(localSrcFilePath, remoteDir);
+				sftpWrapper.deleteLocalFile(localSrcFilePath);
+				Boolean isfound = sftpWrapper.findFileInDirectory(sftpWrapper ,file.getName() , remoteDir);
+						if (isfound) {
+							sftpWrapper.deleteLocalFile(localSrcFilePath);
+						}
 				
 			}
 			
@@ -482,21 +507,47 @@ public void downloadFilesInDirectory( String remoteSrcDir, String localDstDir ) 
 	   
    }
    
-   public static void uploadFileAndRemove(String remoteDestFile, String localFile, String benutzername, String passwort, String host, String port) throws IOException
+   private Boolean findFileInDirectory(SFtpWrapper sftpWrapper, String filename, String remoteDir) throws IOException {
+	   
+	   List<FileData> fileDataList = sftpWrapper.getFileDataList(remoteDir);
+	   
+		if (fileDataList != null) {
+			for (FileData fileData : fileDataList) {
+				if (fileData.name.equals(filename)) {
+					return true;
+				}
+			}
+		}
+	return false;
+}
+
+public static void uploadFileAndRemove(String remoteDestFile, String localFile, String benutzername, String passwort, String host, String port) throws IOException
 	
  	{
  		@SuppressWarnings("resource")
 		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
  		sftpWrapper.uploadFile(localFile, remoteDestFile);
- 		FileData fileData = sftpWrapper.getFileData(remoteDestFile);
- 		if (fileData != null) {
- 			if (fileData.size > 0) {
- 				sftpWrapper.deleteLocalFile(localFile);
-			}
-			
-		}
  		
+ 		FileData fileData = sftpWrapper.getFileData(remoteDestFile);
+ 		sftpWrapper.deleteLocalFile(localFile);
  	}
+
+public static void uploadFileAndRemoveWithCheck(String remoteDestFile, String localFile, String benutzername, String passwort, String host, String port) throws IOException
+
+	{
+		@SuppressWarnings("resource")
+		SFtpWrapper sftpWrapper = new SFtpWrapper(benutzername, passwort, host, Integer.parseInt(port)); 
+		File file = new File(localFile);
+		if (file.isFile()) {
+			sftpWrapper.uploadFile(localFile, remoteDestFile);
+			FileData fileData = sftpWrapper.getFileData(remoteDestFile);
+			if (sftpWrapper.findFileInDirectory(sftpWrapper, file.getName() , remoteDestFile)) {
+				sftpWrapper.deleteLocalFile(localFile);	
+			}
+				
+		}
+		
+	}
    
    
    

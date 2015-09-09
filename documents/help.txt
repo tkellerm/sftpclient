@@ -27,7 +27,11 @@ Folgende Funktionen sind sind vorgesehen :
 putDir  - Alle Dateien eines Verzeichnisses auf den Server kopieren
 putFile - Eine Datei auf den Server kopieren
 mv2remDir   - Alle Dateien eines Verzeichnisses auf den Server kopieren und anschließend lokal löschen
+mv2remDirCheck - Alle Dateien eines Verzeichnisses auf den Server kopieren und prüfen ob remote vorhanden und anschließend lokal löschen
+-- Achtung mit dem Check  bei sftp-Server die Dateien sofort weiterverarbeiten, hier kann es zu Fehlermeldungen kommen -- 
 mv2remFile  - Eine Datei auf den Server kopieren und anschließend lokal löschen
+mv2remFileCheck - Eine Datei auf den Server kopieren und prüfen ob remote vorhanden und anschließend lokal löschen
+-- Achtung mit dem Check  bei sftp-Server die Dateien sofort weiterverarbeiten, hier kann es zu Fehlermeldungen kommen --
 
 getDir  - Alle Dateien eines Verzeichnisses von einem Server in ein lokales Verzeichnis kopieren
 getFile - Eine Datei  von einem Server in ein lokales Verzeichnis kopieren

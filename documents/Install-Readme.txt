@@ -19,7 +19,7 @@ java/projects/sftpclient/includejar/apache-sshd-0.14.0/apache-sshd-0.14.0/lib/to
 java/projects/sftpclient/includejar/commons-lang3-3.4.jar
 
 
-3. die Datei java/log/logging.properties um folgende Zeilen ergänzen :
+3. die Datei java/log/config/logging.properties um folgende Zeilen ergänzen :
  
 Direkt vor die Appenders  
 #

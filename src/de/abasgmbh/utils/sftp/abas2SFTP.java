@@ -215,8 +215,9 @@ public class abas2SFTP implements ContextRunnable {
 	  * putDir  - Alle Dateien eines Verzeichnisses auf den Server kopieren
 	  * putFile - Eine Datei auf den Server kopieren
 	  * mv2remDir   - Alle Dateien eines Verzeichnisses auf den Server kopieren und anschließend lokal löschen
+	  * mv2remDirCheck - Alle Dateien eines Verzeichnisses auf den Server kopieren und prüfen ob remote vorhanden und anschließend lokal löschen
   	  * mv2remFile  - Eine Datei auf den Server kopieren und anschließend lokal löschen
-      *
+      * mv2remFileCheck - Eine Datei auf den Server kopieren und prüfen ob remote vorhanden und anschließend lokal löschen
       * getDir  - Alle Dateien eines Verzeichnisses von einem Server in ein lokales Verzeichnis kopieren
       * getFile - Eine Datei  von einem Server in ein lokales Verzeichnis kopieren
       * mv2locDir - Alle Dateien eines Verzeichnisses von einem Server in eine lokales Verzeichnis kopieren und anschließend auf dem Server löschen
@@ -247,11 +248,21 @@ public class abas2SFTP implements ContextRunnable {
 				SFtpWrapper.uploadDirectoryAndRemoveFiles(remoteFileName, localeFileName, username, password, host, port);
 			
 			break;
+		case "mv2remDirCheck" :
+			
+			SFtpWrapper.uploadDirectoryAndRemoveFilesWithCheck(remoteFileName, localeFileName, username, password, host, port);
+		
+		break;	
 		case "mv2remFile" :
 			
 				SFtpWrapper.uploadFileAndRemove(remoteFileName, localeFileName, username, password, host, port);
 			
 			break;
+		case "mv2remFileCheck" :
+			
+			SFtpWrapper.uploadFileAndRemoveWithCheck(remoteFileName, localeFileName, username, password, host, port);
+		
+		break;
 		case "getDir" :
 			
 				SFtpWrapper.downloadFilesInDirectory(remoteFileName, localeFileName, username, password, host, port);
